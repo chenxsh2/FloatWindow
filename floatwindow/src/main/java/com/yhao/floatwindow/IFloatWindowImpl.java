@@ -13,13 +13,18 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.animation.DecelerateInterpolator;
 
+import java.lang.reflect.Field;
+
 /**
  * Created by yhao on 2017/12/22.
  * https://github.com/yhaolpz
  */
 
 public class IFloatWindowImpl extends IFloatWindow {
-
+    /**
+     * 记录系统状态栏的高度
+     */
+    protected int statusBarHeight;
 
     private FloatWindow.B mB;
     private FloatView mFloatView;
@@ -207,6 +212,11 @@ public class IFloatWindowImpl extends IFloatWindow {
                                 changeY = event.getRawY() - lastY;
                                 newX = (int) (mFloatView.getX() + changeX);
                                 newY = (int) (mFloatView.getY() + changeY);
+                                if (newY < getStatusBarHeight() / 2) {
+                                    newY = getStatusBarHeight() / 2;
+                                } else if (newY > Util.getScreenHeight(mB.mApplicationContext)) {
+                                    newY = Util.getScreenHeight(mB.mApplicationContext) - v.getHeight() - mB.mSlideRightMargin;
+                                }
                                 mFloatView.updateXY(newX, newY);
                                 if (mB.mViewStateListener != null) {
                                     mB.mViewStateListener.onPositionUpdate(newX, newY);
@@ -216,7 +226,7 @@ public class IFloatWindowImpl extends IFloatWindow {
                                 break;
                             case MotionEvent.ACTION_UP:
                                 upX = event.getRawX();
-                                upY = event.getRawY();
+                                upY = event.getRawY() - getStatusBarHeight();
                                 mClick = (Math.abs(upX - downX) > mSlop) || (Math.abs(upY - downY) > mSlop);
                                 switch (mB.mMoveType) {
                                     case MoveType.slide:
@@ -299,4 +309,25 @@ public class IFloatWindowImpl extends IFloatWindow {
         }
     }
 
+    /**
+     * 用于获取状态栏的高度。
+     *
+     * @return 返回状态栏高度的像素值。
+     */
+    public int getStatusBarHeight() {
+        if (statusBarHeight == 0) {
+            try {
+                Class<?> c = Class.forName("com.android.internal.R$dimen");
+                Object o = c.newInstance();
+                Field field = c.getField("status_bar_height");
+                int x = (Integer) field.get(o);
+                statusBarHeight = mB.mApplicationContext.getResources().getDimensionPixelSize(x);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        }
+        return statusBarHeight;
+    }
 }

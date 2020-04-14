@@ -1,0 +1,17 @@
+def cusSavePath = "../../MyFirstApplication/libs"
+def sdkBaseName = project.name
+def originalName = sdkBaseName + "-debug.aar"
+def newName = originalName
+
+task buildAssembleDebug(dependsOn: ['assembleDebug'], type: Copy) {
+    delete (cusSavePath + newName)
+
+    println("sdkBaseName:" + sdkBaseName + " originalName:" + originalName + " newName:" + newName)
+
+    def sourceCls = [project.buildDir.absolutePath + "/outputs/aar/" + originalName]
+    from sourceCls
+    into cusSavePath
+//    rename {
+//        newName
+//    }
+}
