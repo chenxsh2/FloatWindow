@@ -212,11 +212,11 @@ public class IFloatWindowImpl extends IFloatWindow {
                                 changeY = event.getRawY() - lastY;
                                 newX = (int) (mFloatView.getX() + changeX);
                                 newY = (int) (mFloatView.getY() + changeY);
-                                if (newY < getStatusBarHeight() / 2) {
-                                    newY = getStatusBarHeight() / 2;
-                                } else if (newY > Util.getScreenHeight(mB.mApplicationContext)) {
-                                    newY = Util.getScreenHeight(mB.mApplicationContext) - v.getHeight() - mB.mSlideRightMargin;
-                                }
+//                                if (newY < getStatusBarHeight() / 2) {
+//                                    newY = getStatusBarHeight() / 2;
+//                                } else if (newY > Util.getScreenHeight(mB.mApplicationContext)) {
+//                                    newY = Util.getScreenHeight(mB.mApplicationContext) - v.getHeight() - mB.mSlideRightMargin;
+//                                }
                                 mFloatView.updateXY(newX, newY);
                                 if (mB.mViewStateListener != null) {
                                     mB.mViewStateListener.onPositionUpdate(newX, newY);
@@ -226,7 +226,7 @@ public class IFloatWindowImpl extends IFloatWindow {
                                 break;
                             case MotionEvent.ACTION_UP:
                                 upX = event.getRawX();
-                                upY = event.getRawY() - getStatusBarHeight();
+                                upY = event.getRawY() /*- getStatusBarHeight()*/;
                                 mClick = (Math.abs(upX - downX) > mSlop) || (Math.abs(upY - downY) > mSlop);
                                 switch (mB.mMoveType) {
                                     case MoveType.slide:
